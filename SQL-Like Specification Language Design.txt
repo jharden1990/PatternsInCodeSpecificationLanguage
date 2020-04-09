@@ -2,6 +2,7 @@ SQL-Like Specification Language Design
 
 
 General Flow Design 2
+testName(parameters)
 MESSAGE
 LABEL
 TITLE
@@ -9,28 +10,31 @@ FIND (FIRST, NOT) "" (,"", ..., "")
 (WHERE condition (AND, OR condition))
 ((WITHIN subpiece/SOURCE_CODE FIND "" (, "", ..., ""))
 (WHERE condition (AND, OR condition)))
-(UNION, INTERSECT  find_clause) //could also use AND, OR here, but that complicates 											// translation a little bit; could be doable by looking for "FIND" 								   // next.
+(AND, OR  find_clause)
 GIVE (NO) FEEDBACK (GENTLY)
 (FORMAT [MESSAGE, LABEL, TITLE] USING "")
 
 
 
-Backus-Naur Form
-<spec-lang>		::= <msg-part> <label-part> <title-part> <find-part> <feedback-part>
-<msg-part>		::= "MESSAGE" <message>
-<label-part>	::= "LABEL" <label>
-<title-part>	::= "TITLE" <title>
-<find-part>		::= under development
-<feedback-part>	::= "GIVE" <opt-no-part> "FEEDBACK" <opt-gent-part> <opt-form-part>
-<opt-no-part>	::= "NO" | ""
-<opt-gent-part>	::= "GENTLY" | ""
-<opt-form-part>	::= "FORMAT" <formtype-part> "USING" <formatter>
-<formtype-part>	::= "MESSAGE" | "LABEL" | "TITLE" | "MESSAGE, LABEL, TITLE" | ...
-
-
-
-FIND PART DEVELOPMENT
-<find-part>		::= "FIND" <code-to-find-1>
+Extended Backus-Naur Form
+<spec-lang>			::= <msg-part> <label-part> <title-part> <find-part> <feedback-part>
+<msg-part>			::= "MESSAGE" <message>
+<label-part>		::= "LABEL" <label>
+<title-part>		::= "TITLE" <title>
+<find-part>			::= "FIND" <code> [<as-part>] {"," <code> [<as-part>]} [<opt-where-part>] [<opt-within-part>] [<opt-nextfind-part>] 
+<as-part>			::= "AS" <alias>
+<opt-where-part>	::= WHERE" <boolean-condition> [<opt-extension>]
+<boolean-condition>	::= <boolean-code> | <contains-part>
+<contains-part>		::= "CONTAINS" ["NO" | "ALL" | "AT LEAST ONE" | "MORE THAN ONE"] <object-contained>
+<object-contained>	::= <digit> | <string>
+<opt-extension>		::= "AND" <boolean-condition> | "OR" <boolean-condition>
+<opt-within-part>	::= "WITHIN" <subfind-part> "FIND" <code> {"," <code>} [<opt-where-part>] [<opt-within-part>]
+<opt-nextfind-part>	::= "AND" <find-part> | "OR" <find-part>
+<feedback-part>		::= "GIVE" ["NO"] "FEEDBACK" ["GENTLY"] <opt-form-part>
+<opt-form-part>		::= "FORMAT" <formtype-part> "USING" <formatter>
+<formtype-part>		::= <formtype> {"," <formtype>}
+<formtype>			::= "MESSAGE" | "LABEL" | "TITLE"
+<formatter>			::= <code>
 
 
 
@@ -38,3 +42,9 @@ NOTES 3-5-2020
 1. What about different messages for same test/error case? This seems like something that we should look for, based on the conversation.
 2. Preconditions for running a given test, such as after 2 tests have come back positive/negative?
 3. Put this stuff onto my GitHub. 
+4. Make a way to pass in parameters.
+5. Make a place for the name of the test.
+
+NOTES 4-1-2020
+1. How to extend Backus-Naur Form for easy display of zero-to-many clauses?
+2. Consider editing language to allow for more to be done inside the find-part instead of just requiring the feedback part to fall within stuff. Could add flexibility to the language...

@@ -88,4 +88,4 @@ var_instead_of_key(keys)
 		WHERE "_var_" IN keys
 		WITHIN SOURCE_CODE FIND "_dict_['_var_']"
 		GIVE NO FEEDBACK
-		FORMAT MESSAGE USING "_var_".id
+		FORMAT MESSAGE USING "_var_".id 

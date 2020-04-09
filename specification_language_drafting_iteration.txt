@@ -11,26 +11,11 @@ wrong_list_length_8_2():
                     if __expr__.ast_name == "List" and len(__expr__.elts) < 3:
                         return explain_r(message, code, label=tldr)
             return False
-    New Code 1:
-        MESSAGE "You must have at least three items in your list."
-        ERROR_CODE "list length 8.2" ##IMPORTANT NOTE: ERROR_CODE will become LABEL
-        TLDR "List too short" ## IMPORTANT NOTE: TLDR becomes TITLE
-        MATCH "_list_ = __expr__"
-        	expr = "__expr__"
-        	IF expr IS LIST AND Length(expr) < 3
-        		GIVE FEEDBACK
-    New Code 2:
-        MESSAGE "You must have at least three items in your list."
-        ERROR_CODE "list length 8.2"
-        TLDR "List too short"
-        MATCH "___ = __expr__"
-        WHERE type("__expr__") == LIST AND length("__expr__") < 3
-            GIVE FEEDBACK
     New Code SQL:
     	MESSAGE
     	LABEL
     	TITLE
-    	MATCH "___ = __expr__"
+        FIND "___ = __expr__"
     	WHERE type("__expr__") == LIST AND length("__expr__") < 3
     	GIVE FEEDBACK 
 missing_list_initialization_8_2():
@@ -45,26 +30,11 @@ missing_list_initialization_8_2():
             if __expr__.ast_name == "List":
                 return False
         return explain_r(message, code, label=tldr)
-    New Code 1:
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "shopping_cart = __expr__"
-            expr = "__expr__"
-            IF expr IS LIST
-                GIVE NO FEEDBACK
-    New Code 2:
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "shopping_cart = __expr__"
-        WHERE type("__expr__") == LIST
-            GIVE NO FEEDBACK
     New Code SQL:
     	MESSAGE
     	LABEL
     	TITLE
-    	MATCH "shopping_cart = __expr__"
+    	FIND "shopping_cart = __expr__"
         WHERE type("__expr__") == LIST
         GIVE NO FEEDBACK
 wrong_list_is_constant_8_2():
@@ -78,27 +48,12 @@ wrong_list_is_constant_8_2():
             if __expr__.ast_name == "Num":
                 return explain_r(message, code, label=tldr)
         return False
-    New Code 1:
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "shopping_cart = __expr__"
-            expr = "__expr__"
-            IF expr IS NUM
-                GIVE FEEDBACK
-    New Code 2:
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "shopping_cart = __expr__"
-        WHERE type("__expr__") == NUM
-            GIVE FEEDBACK
     New Code SQL:
     	New Code 2:
         MESSAGE
         LABEL
         TITLE
-        MATCH "shopping_cart = __expr__"
+        FIND "shopping_cart = __expr__"
         WHERE type("__expr__") == NUM
         GIVE FEEDBACK
 list_all_zeros_8_2(): (NOT DONE)
@@ -119,23 +74,12 @@ list_all_zeros_8_2(): (NOT DONE)
             if all_zeros:
                 return explain_r(message, code, label=tldr)
         return False
-    New Code 1:
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "_var_ = [__list__]"
-            GET "__list__"
-            ...
-    New Code 2:
-        MESSAGE
-        ERROR_CODE
-        TLDR
     New Code SQL:
     	MESSAGE
     	LABEL
     	TITLE
-    	MATCH "_var_ = [__list__]"
-    	WHERE "__list__".parent().allzeroes() == TRUE
+    	FIND "_var_ = [__list__]"
+    	WHERE "__list__" CONTAINS ALL 0
     	GIVE FEEDBACK
     IMPORTANT Concerns:
         Can the above pattern be used with anything besides a list? Assuming for the moment that the answer is effectively no, it should not be used for anything beyond a list at the level we are working at.
@@ -156,38 +100,12 @@ wrong_list_initialization_placement_8_3()
                     if init_match.match_lineno > for_lineno:
                         return explain_r(message, code, label=tldr)
         return False
-    New Code 1:
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "for ___ in ___:\n    pass"
-            lineNum = LINENUM("for ___ in ___:\n    pass")
-            MATCH "episode_length_list = ___"
-                lineNum2 = LINENUM("episode_length_list = ___")
-                IF lineNum < lineNum2
-                    GIVE FEEDBACK
-
-    New Code 1.1 (would this work as well?):
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "for ___ in ___:\n    __expr__"
-
-
-    New Code 2.1:
-        MESSAGE
-        ERROR_CODE
-        TLDR
-        MATCH "for ___ in ___:\n    __expr__"
-        WHERE "__expr__" == "episode_length_list = ___"
-        GIVE FEEDBACK
-
     New Code SQL:
     	MESSAGE
     	LABEL
     	TITLE
-    	MATCH "for ___ in ___:\n"
-                                   "    pass" AS "for_matches", "episode_length_list = ___" AS "init_matches"
+    	FIND "for ___ in ___:\n"
+                                   "    pass" AS "for", "episode_length_list = ___" AS "init"
         WHERE "init".tree_id > "for".tree_id
         GIVE FEEDBACK
 
