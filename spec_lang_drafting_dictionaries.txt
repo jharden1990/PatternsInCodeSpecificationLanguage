@@ -89,3 +89,50 @@ var_instead_of_key(keys)
 		WITHIN SOURCE_CODE FIND "_dict_['_var_']"
 		GIVE NO FEEDBACK
 		FORMAT MESSAGE USING "_var_".id 
+
+
+def missing_key(keys):
+    message = "You seem to be missing the following dictionary keys:<ul>{}</ul>"
+    code = "miss_key"
+    tldr = "Missing necessary keys"
+    key_list = ""
+    for key in keys:
+        matches = find_matches("\"{}\"".format(key))
+        if not matches:
+            key_list += '<li><code>"' + key + '"</code></li>'
+    if key_list != "":
+        return explain_r(message.format(key_list), code, label=tldr)
+    return False
+
+    New Code:
+    	PARAMETER keys_needed IN, keys_missing OUT
+    	MESSAGE
+    	LABEL
+    	TITLE
+    	FIND EACH `"{keys_needed}"` 
+    	IF NOT FOUND ADD TO keys_missing
+    	END
+    	IF keys_missing IS NOT EMPTY
+    	FORMAT MESSAGE USING keys_missing 
+
+    New Code 2:
+    	PARAMETER key1, key2
+    	MESSAGE `... {}`
+    	FIND `_var_[{key1}][{key2}]`
+    	WHERE which_missing(key1, key2) IS NOT EMPTY
+    	IF FOUND GIVE FEEDBACK
+    	FORMAT MESSAGE USING which_missing(key1, key2)
+
+
+def blank_key(keys):
+    message = "You seem to be missing the following dictionary keys:<ul>{}</ul>"
+    code = "blank_key"
+    tldr = "Missing Key"
+    key_list = ""
+
+    for key in keys:
+        if not find_match("_var_['{}']".format(key)):
+            key_list += '<li><code>"' + key + '"</code></li>'
+
+    if key_list != "":
+        return explain_r(message.format(key_list), code, label=tldr)

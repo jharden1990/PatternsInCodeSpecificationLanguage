@@ -56,7 +56,7 @@ wrong_list_is_constant_8_2():
         FIND "shopping_cart = __expr__"
         WHERE type("__expr__") == NUM
         GIVE FEEDBACK
-list_all_zeros_8_2(): (NOT DONE)
+list_all_zeros_8_2():
     Old Code:
         message = 'Try seeing what happens when you change the numbers in the list.'
         code = 'default_list_8.2'
@@ -133,20 +133,11 @@ wrong_iteration_body_8_3()
         if not match:
             return explain_r(message, code, label=tldr)
         return False
-    New Code 1:
-    New Code 2:
-        MESSAGE:
-        ERROR_CODE:
-        TLDR:
-        CODE:
-        MATCH "for _item_ in _list_:\n    sum_length = ___ + ___\n"
-        ## IMPORTANT QUESTION: ASK about removing the double-line part?
-            GIVE NO FEEDBACK
     New Code SQL:
     	MESSAGE
     	LABEL
     	TITLE
-    	MATCH "for _item_ in _list_:\n"
+    	FIND "for _item_ in _list_:\n"
                            "    sum_length = ___ + ___\n"
     	GIVE NO FEEDBACK
 wrong_print_8_3()
@@ -165,12 +156,12 @@ wrong_print_8_3()
     New Code 2:
         MESSAGE...
         CODE:
-        MATCH "for _item_ in _list_:\n"
+        FIND "for _item_ in _list_:\n"
                            "    pass\n"
                            "print(_total_)"
-            GIVE NO FEEDBACK
+        GIVE NO FEEDBACK
 
-missing_target_slot_empty_8_4()
+missing_target_slot_empty_8_4() //TODO: look at this one some more
     Old Code:
         message = 'You must fill in the empty slot in the iteration.'
         code = 'target_empty_8.4'
@@ -193,7 +184,7 @@ missing_target_slot_empty_8_4()
         MATCH "for _item_ in pages_count_list:\n"
                                "    pass"
         WHERE "_item_".first() == "___"
-            GIVE FEEDBACK
+        GIVE FEEDBACK
 
 missing_addition_slot_empty_8_4()
     - see missing_target_slot_empty_8_4()

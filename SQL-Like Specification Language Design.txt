@@ -17,20 +17,26 @@ GIVE (NO) FEEDBACK (GENTLY)
 
 
 Extended Backus-Naur Form
-<spec-lang>			::= <msg-part> <label-part> <title-part> <find-part> <feedback-part>
+<spec-lang>			::= [<parameters-part>] <msg-part> <label-part> <title-part> <find-part> <feedback-part>
+<parameters-part>	::=	"PARAMETERS" <parameter> {"," <parameter>}
 <msg-part>			::= "MESSAGE" <message>
 <label-part>		::= "LABEL" <label>
 <title-part>		::= "TITLE" <title>
-<find-part>			::= "FIND" <code> [<as-part>] {"," <code> [<as-part>]} [<opt-where-part>] [<opt-within-part>] [<opt-nextfind-part>] 
+<find-part>			::= <find-each-part> | <normal-find-part>
+<find-each-part>	::= <for-each-part> <normal-find-part> "END FOR EACH" ["WITH MERGED FEEDBACK"]
+<for-each-part>		::= "FOR EACH" <item-alias> IN <iterable-parameter>
+<normal-find-part>	::= "FIND" <code> [<as-part>] [<cut-part>] {"," <code> [<as-part>] [<cut-part>]} [<opt-where-part>] [<opt-within-part>] <if-part>
 <as-part>			::= "AS" <alias>
+<cut-part>			::= "WITH CUT"
 <opt-where-part>	::= WHERE" <boolean-condition> [<opt-extension>]
 <boolean-condition>	::= <boolean-code> | <contains-part>
 <contains-part>		::= "CONTAINS" ["NO" | "ALL" | "AT LEAST ONE" | "MORE THAN ONE"] <object-contained>
 <object-contained>	::= <digit> | <string>
 <opt-extension>		::= "AND" <boolean-condition> | "OR" <boolean-condition>
 <opt-within-part>	::= "WITHIN" <subfind-part> "FIND" <code> {"," <code>} [<opt-where-part>] [<opt-within-part>]
-<opt-nextfind-part>	::= "AND" <find-part> | "OR" <find-part>
-<feedback-part>		::= "GIVE" ["NO"] "FEEDBACK" ["GENTLY"] <opt-form-part>
+<if-part>			::= "IF" ["NOT"] "FOUND" <next-part>
+<next-part>			::= <find-part> | <feedback-part> 
+<feedback-part>		::= "GIVE FEEDBACK" ["GENTLY"] <opt-form-part>
 <opt-form-part>		::= "FORMAT" <formtype-part> "USING" <formatter>
 <formtype-part>		::= <formtype> {"," <formtype>}
 <formtype>			::= "MESSAGE" | "LABEL" | "TITLE"
