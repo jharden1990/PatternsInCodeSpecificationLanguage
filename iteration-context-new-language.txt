@@ -131,7 +131,7 @@ def wrong_list_initialization_placement_8_3(): SUCCESS WITH ASSUMPTIONS
         IF FOUND GIVE FEEDBACK
 
     NOTE ON NEW CODE:
-        Assumes that the second piece's for match in matches happens within the first piece's for match in matches.
+        Assumes that the second piece's for match in matches happens within the first piece's for match in matches. Or does it? Perhaps there is a way to represent this without needing to make this assumption...
 
     NEW CODE 2:
         FIND `for ___ in episode_length_list:\n\t__expr1__\n__expr2__`
@@ -1180,6 +1180,7 @@ def wrong_conversion_10_2(): SUCCESS WITH ASSUMPTIONS
 
     NOTES ON NEW CODE 2:
         Assumes that allowing the IF/ELSE structure is okay and that can have WITHIN after the IF or ELSE presuming there is already at least 1 FIND.
+        Might be resolvable with a CASE statement of sorts.
 def wrong_filter_condition_10_3(): SUCCESS WITH ASSUMPTIONS
     """
 

@@ -84,7 +84,7 @@ def missing_iterator_initialization(): SUCCESS WITH ASSUMPTIONS
         IF FOUND GIVE FEEDBACK
 
         FIND pattern1
-        WHERE _list_.astNode.id WAS NOT OF TYPE LIST
+        WHERE _list_.astNode.id != "___" AND _list_.astNode.id WAS NOT OF TYPE LIST 
         IF FOUND GIVE FEEDBACK
 
     NEW CODE 2:
