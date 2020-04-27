@@ -175,7 +175,8 @@ def list_initialization_misplaced(): SUCCESS WITH ASSUMPTIONS
     return False
 
     NOTES ON NEW CODE:
-        Need to know what def_use_error does. See wrong_target_is_list() for more info on other assumptions.
+        Need to know what 
+         does. See wrong_target_is_list() for more info on other assumptions.
 def missing_for_slot_empty(): SUCCESS WITH MINOR ASSUMPTIONS
     """
 

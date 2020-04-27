@@ -3,22 +3,60 @@ Notes on Successes with (Minor) Assumptions for Specification Language work
 Summary of functions, options, property fetches to implement:
 	- Need to represent the following functions, options, and property fetches:
 		_ .has
-		_ .numeric_logic_check
+			} if __expr__.has(_list_.astNode)
+		_ .numeric_logic_check (DON'T IMPLEMENT THIS)
 		_ .find_all
+			}  if len(__expr__sub.find_all("Name")) == 0:
+			}  if len(__num__.find_all("Num")) > 0:
 		_ .was_type
+			} if _key_.id in keys and not _key_.was_type("StrType"):
+			} if data_state(_item_).was_type('list'):
+			} elif not data_state(_list_).was_type('list'):
 		_ data_state()
+			} if data_state(_item_).was_type('list'):
+			} if key and data_state(_var_.id):
+			} if __str1__.is_ast("Str") and __str2__.is_ast("Str") and data_state(_var_.id):
 		_ def_use_error()
+			} if data_state(_item_).was_type('list') and def_use_error(_item_):
+			} if def_use_error(_item_):
 		_ var_check()
+			} key = var_check(__str__, keys)
+        	  if key:
+        	} key = var_check(__str__, unused_keys)
+              if key:
+            } key = var_check(submatch["__str__"])
+              if key:
+            } value1 = var_check(__str1__, keys)
+              value2 = var_check(__str2__, keys)
+              if value1 and value2:
 		_ uncover_type().type.subtype
+			} type_check = uncover_type(_list_, "ListType")
+        	  if type_check and str(type_check.type.subtype) == "DictType":
 		_ str()
-			* str(var_state.type)
-			* str(data_state().type.subtype)
+			} str(var_state.type)
+			} str(data_state().type.subtype)
+			} if type_check and str(type_check.type.subtype) == "DictType":
+			} var_state = _var_.get_data_state()
+        	  if var_state and str(var_state.type) == "ListType" and str(var_state.type.subtype) == "DictType":
+        	} 
 		_ list_dict_indices()
+			} wrong_keys(unused_keys)
 		_ .is_ast("Str")
+			} if __str1__.is_ast("Str") and __str2__.is_ast("Str") and data_state(_var_.id):
 		_ .value
+			} value = __exp__.value
+        	  if value in val_list:
+        	} if __str__.is_ast("Str") and __str__.value in keys:
+        	} wrong_keys(unused_keys):
+        	} if __str__.is_ast("Str") and __str__.value == _var_.id:
+        	} 
 		_ dict_detect()
+			} key_comp(keys)
 		_ , use_previous = false
+			} key_comp(keys): ## Problematic to implement this entire test at this time.
 		_ .get_data_state()
+			} var_state = _var_.get_data_state()
+        	  if var_state and str(var_state.type) == "ListType" and str(var_state.type.subtype) == "DictType":
 
 Minor Assumptions:
 
@@ -39,6 +77,7 @@ Minor Assumptions:
 	instructor_iteration.py:
 		- checking astNode of a variable (_item_ and _item_.astNode)?
 		- checking astNode of the first instance of a variable (_item_ = match["_item_"][0].astNode vs. _item_ = match["_item_"].astNode)
+			_ (_item_ = match["_item_"][0].astNode vs. _item_ = match["_item_"].astNode) are exactly the same.
 		- ensuring _item_ from first pattern is same as _item_ from sub-pattern or second pattern?
 
 	dictionaries.py:

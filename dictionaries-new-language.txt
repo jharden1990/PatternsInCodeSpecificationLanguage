@@ -6,13 +6,13 @@ Statistics:
         SUCCESS: 29 = approx. 82.9%
         FAIL: 6 = approx. 17.1%
     Specific Rates:
-        SUCCESS: 12 = approx. 34.3%
+        SUCCESS: 11 
         SUCCESS WITH MINOR ASSUMPTIONS: 9 = approx. 25.7%
-        SUCCESS WITH ASSUMPTIONS: 8 = approx. 22.9%
+        SUCCESS WITH ASSUMPTIONS: 9
         FAIL WITH POSSIBILITY OF FUTURE SUCCESS: 1 = approx. 2.86%
         FAIL: 5 = approx. 14.3%
 START OF CODE
-def hard_coding(val_list): SUCCESS
+def hard_coding(val_list): SUCCESS WITH ASSUMPTIONS
     """
 
     Args:
