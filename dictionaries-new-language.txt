@@ -56,6 +56,9 @@ def hard_coding(val_list): SUCCESS WITH ASSUMPTIONS
         WITHIN __exp__ FIND pattern2sub1
         WHERE __exp2__.value IN val_list
         IF FOUND GIVE FEEDBACK
+
+    NEW CODE 2:
+        2 Different tests, same feedback
 def print_dict_key(keys): SUCCESS WITH MINOR ASSUMPTIONS
     """
 

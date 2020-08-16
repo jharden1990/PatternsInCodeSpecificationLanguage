@@ -1,0 +1,65 @@
+BEGIN test_case_method()
+    MESSAGE `message`
+    LABEL `label`
+    TITLE `title`
+    FIND `some pattern of code with __expr__`
+    WITHIN __expr__ FIND `some other pattern of code`
+    WHERE `some condition with _var_ and __expr__ and _var2_ and __expr2__`
+    FIND `some third pattern of code`
+    IF FOUND GIVE GENTLE FEEDBACK
+    END
+#
+BEGIN test_case_method2()
+    MESSAGE `message`
+    LABEL `label`
+    TITLE `title`
+    FIND `some pattern of code with __expr__`
+    WITHIN __expr__ FIND `some other pattern of code`
+    FIND `some third pattern of code`
+    IF NOT FOUND GIVE NO FEEDBACK
+    WITHIN __expr2__ FIND `some third pattern of code`
+    IF FOUND GIVE GENTLE FEEDBACK(`message=MESSAGE`, label=LABEL, `title=TITLE`)
+    END
+
+BEGIN test_case_method3()
+    MESSAGE `message`
+    LABEL `label`
+    TITLE `title`
+    FIND `some pattern of code with __expr__`
+    WITHIN __expr__ FIND `some other pattern of code`
+    FIND `some third pattern of code`
+    IF NOT FOUND GIVE NO FEEDBACK
+    ELSE GIVE GENTLE FEEDBACK(message=MESSAGE, label=LABEL, title=TITLE)
+    END
+
+BEGIN test_case_method4(some_parameter, some_parameter2)
+    MESSAGE `message`
+    LABEL `label`
+    TITLE `title`
+    FIND `some pattern of code with __expr__`
+    WITHIN __expr__ FIND `some other pattern of code`
+    FIND `some third pattern of code`
+    IF NOT FOUND GIVE NO FEEDBACK
+    ELSE GIVE GENTLE FEEDBACK
+    END
+
+BEGIN test_case_method5()
+    MESSAGE `message`
+    LABEL `label`
+    TITLE `title`
+    FIND `some pattern of code with __expr__`
+    WITHIN __expr__ FIND `some other pattern of code`
+    FIND `some third pattern of code`
+    IF NOT FOUND GIVE NO FEEDBACK
+    END WITH GENTLE FEEDBACK
+
+BEGIN test_case_method6()
+    MESSAGE `message`
+    LABEL `label`
+    TITLE `title`
+    FIND `some pattern of code with __expr__`
+    WITHIN __expr__ FIND `some other pattern of code`
+    FIND `some third pattern of code`
+    IF NOT FOUND GIVE NO FEEDBACK
+    END WITH GENTLE FEEDBACK(`message=MESSAGE`, `label=LABEL`, title=TITLE)
+#

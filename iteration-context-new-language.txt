@@ -104,6 +104,11 @@ def list_all_zeros_8_2(): SUCCESS
         FIND `_var_ = [__list__]`
         WHERE `__list__` CONTAINS ALL 0
         IF FOUND GIVE FEEDBACK
+
+    NEW CODE 2:
+        FIND `_var_ = [__list__]`
+        WHERE contains_all_zero(__list__)
+        IF FOUND GIVE FEEDBACK
 def wrong_list_initialization_placement_8_3(): SUCCESS WITH ASSUMPTIONS
     """
 

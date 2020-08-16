@@ -1,0 +1,663 @@
+# tests not done yet: 
+	list_all_zeros_8_2 - due to needing helper function
+	wrong_list_initialization_placement_8_3 - need BEFORE feature
+	wrong_accumulator_initialization_placement_8_3 - need BEFORE feature
+	missing_zero_initialization - particular error case
+	iterator_is_function - CAN DO... NEED TO DO THIS. DONE.
+	    for ___ in _func_():
+    pass
+	plot_group_error - can't do because reliant on output
+	wrong_debug_10_6 - need to see if I can get this one to work.
+#
+
+
+BEGIN wrong_list_length_8_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `_list_ = __expr__`
+WHERE `__expr__.ast_name == "List" and len(__expr__.elts) < 3`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN missing_list_initialization_8_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `shopping_cart = __expr__`
+WHERE `__expr__.ast_name == "List"`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_list_is_constant_8_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `shopping_cart = __expr__`
+WHERE `__expr__.ast_name == "Num"`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+# 
+BEGIN list_all_zeros_8_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `_var_ = [__list__]`
+WHERE `allZeros(__list__)`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+#
+
+#
+BEGIN wrong_list_initialization_placement_8_3()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for ___ in ___:\n    pass` AS for_matches, `episode_length_list = ___` AS init_matches
+WHERE `for_matches.matchOccursAfter(init_matches)`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+#
+
+# 
+BEGIN wrong_accumulator_initialization_placement_8_3()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for ___ in ___:\n    pass` AS for_matches, `sum_length = 0` AS init_matches
+WHERE `for_matches.matchOccursAfter(init_matches)`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+#
+
+BEGIN wrong_iteration_body_8_3()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in _list_:\n    sum_length = ___ + ___\n`
+IF NOT FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN wrong_print_8_3()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in _list_:\n    pass\nprint(_total_)`
+IF NOT FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN missing_target_slot_empty_8_4()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in pages_count_list:\n    pass`
+WHERE `_item_.id == "___"`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN missing_addition_slot_empty_8_4()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `sum_pages + _item_`
+WHERE `_item_.id == "___"`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN wrong_names_not_agree_8_4()
+MESSAGE `Each value of <code>{0!s}</code> must be added to <code>{1!s}</code>.`
+LABEL `label`
+TITLE `title`
+FIND `for _item1_ in pages_count_list:\n    sum_pages = sum_pages + _item2_`
+WHERE `_item1_.id != _item2_.id`
+IF FOUND GIVE FEEDBACK(`message=MESSAGE.format(_item1_.id, _item2_.id)`, label=LABEL, title=TITLE)
+END WITHOUT FEEDBACK
+
+BEGIN wrong_modifying_list_8_5()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `[20473, 27630, 17849, 19032, 16378]`
+IF NOT FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN wrong_modifying_list_8_6()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `_list_ = [2.9, 1.5, 2.3, 6.1]`
+IF NOT FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN wrong_should_be_counting()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    __expr__`
+WITHIN __expr__ FIND `___ = ___ + _item_`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN wrong_should_be_summing()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    __expr__`
+WITHIN __expr__ FIND `___ = 1 + ___`
+IF FOUND GIVE FEEDBACK
+END WITHOUT FEEDBACK
+
+BEGIN missing_addition_slot_empty()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `___ + _item_`
+WHERE `_item_.id == "___"`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_cannot_sum_list()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for ___ in _list_ :\n    __expr__`
+WITHIN __expr__ FIND `___ = ___ + _list_`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN missing_no_print()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `print(___)`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN missing_counting_list()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    __expr__`
+WITHIN __expr__ FIND `_sum_ = _sum_ + 1`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN missing_summing_list()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    __expr__`
+WITHIN __expr__ FIND `_sum_ = _sum_ + _item_`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+#
+BEGIN missing_zero_initialization()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for ___ in _LIST_:\n    __expr__`
+WITHIN __expr__ FIND `_sum_ = _sum_ + ___`
+FIND `_sum_ = 0\nfor ___ in ___:\n    __expr2__`
+IF NOT FOUND GIVE FEEDBACK(`message=MESSAGE.format(_LIST_.id)`, label=LABEL, title=TITLE)
+END
+#
+
+BEGIN wrong_printing_list()
+MESSAGE `You should be printing a single value.`
+LABEL `list_print`
+TITLE `Printing in Iteration`
+FIND `for ___ in ___:\n    __expr__`
+WITHIN __expr__ FIND `print(___)`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN missing_average()
+MESSAGE `An average value is not computed.`
+LABEL `no_avg`
+TITLE `Missing Computation`
+FIND `for ___ in ___:\n    pass\n__expr__`
+WITHIN __expr__ FIND `_total_/_count_`
+WHERE `_total_.id != _count_.id`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN warning_average_in_iteration()
+MESSAGE `("An average value is best computed after the properties name <code>{0!s}</code>(total) and <code>{1!s}</code> are completely known rather than recomputing the average on each iteration.")`
+LABEL `avg_in_iter`
+TITLE `Redundant Average Calculation`
+FIND `for ___ in ___:\n    __expr__\n`
+WITHIN __expr__ FIND `_average_ = _total_/_count_`
+WHERE `_total_.id != _count_.id != _average_.id and _total_.id != _average_.id`
+IF FOUND GIVE FEEDBACK(`message=MESSAGE.format(_total_.id, _count_.id)`, label=LABEL, title=TITLE)
+END
+
+#
+BEGIN wrong_average_denominator()
+MESSAGE `The average is not calculated correctly.`
+LABEL `avg_denom`
+TITLE `Incorrect Average Calculation`
+FIND `for ___ in ___:\n    __expr__\n__expr2__`
+WITHIN __expr__, __expr2__ FIND `_count_ = _count_ + 1`, `___/_value_`
+WHERE `_count_.id != _value_.id`
+IF FOUND GIVE FEEDBACK(message, label=code, title=tldr)
+END
+#
+
+BEGIN wrong_average_denominator()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for ___ in ___:\n    __expr__\n__expr2__`
+WITHIN __expr__ FIND `_count_ = _count_ + 1`
+WITHIN __expr2__ FIND `___/_value_`
+WHERE `_count_.id != _value_.id`
+IF FOUND GIVE FEEDBACK
+END
+
+#
+BEGIN wrong_average_numerator()
+MESSAGE `The average is not calculated correctly.`
+LABEL `avg_numer`
+TITLE `Incorrect Average Calculation`
+FIND `for ___ in ___:\n    __expr__\n__expr2__`
+WITHIN __expr__, __expr2__ FIND `_total_ = _total_ + _item_`, `_value_/___`
+WHERE `_count_.id != _value_.id`
+IF FOUND GIVE FEEDBACK(message, label=code, title=tldr)
+END
+#
+
+BEGIN wrong_average_numerator()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for ___ in ___:\n    __expr__\n__expr2__`
+WITHIN __expr__ FIND `_total_ = _total_ + _item_`
+WITHIN __expr2__ FIND `_value_/___`
+WHERE `_total_.id != _value_.id`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_compare_list()
+MESSAGE `Each item in the list <code>{0!s}</code> must be compared one item at a time.`
+LABEL `comp_list`
+TITLE `Not Comparing Each Item`
+FIND `for ___ in _list_:\n    if __expr__:\n        pass`
+WHERE `__expr__.has(_list_.astNode)`
+IF FOUND GIVE FEEDBACK(`message=MESSAGE.format(_list_.id)`, label=LABEL, title=TITLE)
+END
+
+BEGIN wrong_for_inside_if()
+MESSAGE `The iteration should not be inside the decision block.`
+LABEL `for_in_if`
+TITLE `For inside if`
+FIND `if ___:\n    for ___ in ___:\n        pass`
+IF FOUND GIVE FEEDBACK
+END
+
+
+BEGIN iterator_is_function()
+MESSAGE `You should make a variable for the list instead of using a function call for the list.`
+LABEL `iter_is_func`
+TITLE `Using Function Call instead of List`
+FIND `for ___ in __funcCall__():\n    pass`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_list_initialization_9_1()
+MESSAGE `The list of rainfall amounts (<code>rainfall_list</code>) is not initialized properly.`
+LABEL `list_init_9.1`
+TITLE `Incorrect List Initialization`
+FIND `rainfall_list = weather.get("Data.Precipitation","Station.Location","Blacksburg, VA")`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_accumulator_initialization_9_1()
+MESSAGE `The variable to hold the total value of the rainfall amounts (<code>rainfall_sum</code>) is not initialized properly.`
+LABEL `accu_init_9.1`
+TITLE `Incorrect Accumulation Variable initialization`
+FIND `rainfall_sum = 0`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_accumulation_9_1()
+MESSAGE `The addition of each rainfall amount to <code>rainfall_sum</code> is not correct.`
+LABEL `accu_9.1`
+TITLE `Incorrect Accumulation Statement`
+FIND `rainfall_sum = _item_ + rainfall`
+WHERE `_item_.id != "rainfall_sum"`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_list_initialization_placement_9_1()
+MESSAGE `The list of rainfall amount (<code>rainfall_list</code>) must be initialized before the iteration that uses this list.`
+LABEL `list_init_place_9.1`
+TITLE `List initialization Misplaced or Missing`
+FIND `rainfall_list = ___\nfor _item_ in _list_:\n    pass`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_accumulator_initialization_placement_9_1()
+MESSAGE `The variable for the sum of all the rainfall amounts (<code>rainfall_sum</code>) must be initialized before the iteration which uses this variable.`
+LABEL `accu_init_place_9.1`
+TITLE `Accumulator initialization Misplaced or missing`
+FIND `rainfall_sum = ___\nfor _item_ in _list_:\n    pass`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_iteration_body_9_1()
+MESSAGE `The addition of each rainfall amount to the total rainfall is not in the correct place.`
+LABEL `iter_body_9.1`
+TITLE `Accumulation Statement Misplaced or Missing`
+FIND `for _item_ in _list_:\n    rainfall_sum = ___`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+#* Started using new syntax within GIVE FEEDBACK() *#
+
+BEGIN wrong_print_9_1()
+MESSAGE `The output of the total rainfall amount is not in the correct place. The total rainfall should be output only once after the total rainfall has been computed.`
+LABEL `print_9.1`
+TITLE `Print Statement Misplaced or Missing`
+FIND `for _item_ in _list_:\n    pass\nprint(_total_)`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_list_initialization_9_2()
+MESSAGE `The list of rainfall amounts (<code>rainfall_list</code>) is not initialized properly.`
+LABEL `list_init_9.2`
+TITLE `Incorrect List Initialization`
+FIND `rainfall_list = weather.get("Data.Precipitation","Station.Location","Blacksburg, VA")`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_accumulator_initialization_9_2()
+MESSAGE `The variable to hold the total value of the rainfall amounts (<code>rainfall_count</code>) is not initialized properly.`
+LABEL `accu_init_9.2`
+TITLE `Incorrect Initialization`
+FIND `rainfall_count = 0`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_accumulation_9_2()
+MESSAGE `The adding of another day with rainfall to the total count of days with rainfall (<code>rainfall_count</code>) is not correct.`
+LABEL `accu_9.2`
+TITLE `Accumulation Statement Incorrect`
+FIND `rainfall_count = _item_ + 1`
+WHERE `_item_.id != "rainfall_count"`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_list_initialization_placement_9_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `rainfall_list = ___\nfor _item_ in _list_:\n    pass`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_accumulator_initialization_placement_9_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `rainfall_count = ___\nfor _item_ in _list_:\n    pass`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_iteration_body_9_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in _list_:\n    if __expr__:\n        pass`
+WHERE `__expr__.numeric_logic_check(1, "var > 0")`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_decision_body_9_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `if __expr__:\n    rainfall_count = rainfall_count + 1`
+WHERE `__expr__.numeric_logic_check(1, "var > 0")`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_print_9_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in _list_:\n    pass\nprint(_total_)`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_comparison_9_6()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `if __comp__:\n    pass`
+WHERE `__comp__.numeric_logic_check(1, "var > 80") == False`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_conversion_10_2()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _target_ in ___:\n    __expr__`
+IF NOT FOUND GIVE NO FEEDBACK
+WITHIN __expr__ FIND `_target_*0.04`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_filter_condition_10_3()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `if __expr__:\n    pass`
+IF NOT FOUND GIVE NO FEEDBACK
+WHERE `__expr__.numeric_logic_check(1, "var > 0") or __expr__.numeric_logic_check(1, "var != 0")`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_and_filter_condition_10_4()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _temp_ in _list_:\n    if __expr__:\n        pass`
+WHERE `(__expr__.has(_temp_.astNode) and not __expr__.numeric_logic_check(1, "32 <= temp <= 50"))`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_nested_filter_condition_10_4()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _temp_ in _list_:\n    if __cond1__:\n        if __cond2__:\n            pass`
+WHERE `(__cond1__.has(_temp_.astNode) and __cond2__.has(_temp_.astNode) and (__cond1__.numeric_logic_check(1, "32 <= temp") and __cond2__.numeric_logic_check(1, "temp <= 50") or __cond2__.numeric_logic_check(1, "32 <= temp") and __cond1__.numeric_logic_check(1, "temp <= 50"))) == False`
+IF FOUND GIVE FEEDBACK
+END
+
+
+BEGIN wrong_conversion_problem_10_5()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    __expr__`
+IF NOT FOUND GIVE NO FEEDBACK
+WITHIN __expr__ FIND `_item_*0.62`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+
+BEGIN wrong_filter_problem_atl1_10_5()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    if __cond__:\n        _list_.append(__expr__)`
+WITHIN __expr__ FIND `_item_*0.62`
+WHERE `(__cond__.has(_item_.astNode) and not __cond__.numeric_logic_check(0.1, "item > 16.1290322580645"))`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_filter_problem_atl2_10_5()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    _miles_ = __expr__\n    if __cond__:\n        _list_.append(_miles_)`
+WITHIN __expr__ FIND `_item_*0.62`
+WHERE `not (__cond__.has(_miles_.astNode) and __cond__.numeric_logic_check(1, "_item_ > 10"))`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_append_problem_atl1_10_5()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    if __cond__:\n        _list_.append(__expr__)`
+WHERE `(__cond__.numeric_logic_check(0.1, "item > 16.1290322580645") and __cond__.has(_item_.astNode))`
+WITHIN __expr__ FIND `_item_*0.62`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_append_problem_atl2_10_5()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for _item_ in ___:\n    _miles_ = _item_ * 0.62\n    if __cond__:\n        _list_.append(_var_)`
+WHERE `(__cond__.has(_miles_) and __cond__.numeric_logic_check(1, "_miles_ > 10")) and _var_.id != _miles_.id`
+IF FOUND GIVE FEEDBACK
+END
+
+#
+BEGIN wrong_debug_10_6()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `quakes = earthquakes.get("location.depth","(None)","")\nquakes_in_miles = []\nfor quake in _list1_:\n    _list2_.append(quake * 0.62)\nplt.hist(quakes_in_miles)\nplt.xlabel("Depth in Miles")\nplt.ylabel("Number of Earthquakes")\nplt.title("Distribution of Depth in Miles of Earthquakes")\nplt.show()`
+WHERE `(_list1_ in ["quake", "quakes", "quakes_in_miles"] and _list2_ in ["quake", "quakes", "quakes_in_miles"] and _list1_ != "quakes_in_miles" and _list2_ != "quakes" and (_list1_ != "quake" or _list2_ != "quake"))`
+IF NOT FOUND GIVE FEEDBACK
+END
+#
+
+BEGIN wrong_debug_10_7()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `filtered_sentence_counts = []\nbook_sentence_counts = classics.get("metrics.statistics.sentences","(None)","")\nfor book in book_sentence_counts:\n    if book >= 5000:\n        filtered_sentence_counts.append(book)\nplt.hist(filtered_sentence_counts)\nplt.title("Distribution of Number of Sentences in Long Books")\nplt.xlabel("Number of Sentences")\nplt.ylabel("Number of Long Books")\nplt.show()\n`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+# I think this should work because __expr__ in the submatch (find in within) should be different from __expr__ in original find? Does carryover only work for _var_? #
+# TODO / TODISCUSS: WHERE as taking in a set of ASTs and spitting out a set of ASTs that match some condition vs. IF statement... maybe expand IF clause to deal with this? #
+BEGIN wrong_initialization_in_iteration()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `for ___ in ___:\n    __expr__`
+WITHIN __expr__ FIND `_assign_ = __expr2__`
+WHERE `len(__expr2__.find_all("Name")) == 0`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_duplicate_var_in_add()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `_item_ + _item_`
+IF FOUND GIVE FEEDBACK
+END
+
+#
+BEGIN plot_group_error(output=None, plots=None)
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `
+END
+#
+
+
+BEGIN all_labels_present()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `plt.title(___)\nplt.show()`
+IF NOT FOUND GIVE GENTLE FEEDBACK
+FIND `plt.xlabel(___)\nplt.show()`
+IF NOT FOUND GIVE GENTLE FEEDBACK
+FIND `plt.ylabel(___)\nplt.show()`
+IF NOT FOUND GIVE GENTLE FEEDBACK
+END
+
+
+BEGIN show_parens()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `plt.show`
+IF NOT FOUND GIVE NO FEEDBACK
+FIND `plt.show()`
+IF NOT FOUND GIVE GENTLE FEEDBACK
+END
+
+BEGIN hard_code_8_5()
+MESSAGE `message`
+LABEL `label`
+TITLE `title`
+FIND `print(__num__)`
+WHERE `len(__num__.find_all("Num")) > 0`
+IF FOUND GIVE FEEDBACK
+END
+
+# begin new patterns 2020-08-06 #
+
+BEGIN wrong_conversion_placement_1()
+MESSAGE `The input is always a string and must be converted to a number before being used in an arithmetic calculation.`
+LABEL `label`
+TITLE `title`
+FIND `
+_var_ = input()
+_var2_ = __expr__`
+WITHIN __expr__ FIND `_var_ * ___`
+IF NOT FOUND GIVE NO FEEDBACK
+WHERE `_var_.was_type('NumType')`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_conversion_placement_2()
+MESSAGE `The input is always a string and must be converted to a number before being used in an arithmetic calculation.`
+LABEL `label`
+TITLE `title`
+FIND `
+_var_ = input()
+_var2_ = __expr__`
+WITHIN __expr__ FIND `_var_ + ___`
+IF NOT FOUND GIVE NO FEEDBACK
+WHERE `_var_.was_type('NumType')`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_conversion_placement_3()
+MESSAGE `The conversion should be applied to result of the input operation.`
+LABEL `label`
+TITLE `title`
+FIND `input(float())`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_conversion_type()
+MESSAGE `The input is a number with a decimal point. The conversion should reflect this type of number.`
+LABEL `label`
+TITLE `title`
+FIND `int()`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN missing_float_conversion()
+MESSAGE `The input is always a string and must be converted to a number with decimals.`
+LABEL `label`
+TITLE `title`
+FIND `float()`
+IF NOT FOUND GIVE FEEDBACK
+END

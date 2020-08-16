@@ -1,0 +1,51 @@
+# begin new patterns 2020-08-06 #
+
+BEGIN wrong_conversion_placement_1()
+MESSAGE `The input is always a string and must be converted to a number before being used in an arithmetic calculation.`
+LABEL `label`
+TITLE `title`
+FIND `
+_var_ = input()
+_var2_ = __expr__`
+WITHIN __expr__ FIND `_var_ * ___`
+IF NOT FOUND GIVE NO FEEDBACK
+WHERE `_var_.was_type('NumType')`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_conversion_placement_2()
+MESSAGE `The input is always a string and must be converted to a number before being used in an arithmetic calculation.`
+LABEL `label`
+TITLE `title`
+FIND `
+_var_ = input()
+_var2_ = __expr__`
+WITHIN __expr__ FIND `_var_ + ___`
+IF NOT FOUND GIVE NO FEEDBACK
+WHERE `_var_.was_type('NumType')`
+IF NOT FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_conversion_placement_3()
+MESSAGE `The conversion should be applied to result of the input operation.`
+LABEL `label`
+TITLE `title`
+FIND `input(float())`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN wrong_conversion_type()
+MESSAGE `The input is a number with a decimal point. The conversion should reflect this type of number.`
+LABEL `label`
+TITLE `title`
+FIND `int()`
+IF FOUND GIVE FEEDBACK
+END
+
+BEGIN missing_float_conversion()
+MESSAGE `The input is always a string and must be converted to a number with decimals.`
+LABEL `label`
+TITLE `title`
+FIND `float()`
+IF NOT FOUND GIVE FEEDBACK
+END
