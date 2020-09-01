@@ -91,7 +91,7 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
         else:
             string_to_add += "[]\n\tfor match in prev_matchset:\n\t\t" + this_find + '.extend(find_matches("""'
             string_to_add += ctx.CODE_TEXT().getText() + '""", use_previous = match))'
-            string_to_add += "\n\tprev_matchset = " + this_find + "\n"
+            string_to_add += "\n\tprev_matchset = " + this_find + "\n\t"
             string_to_add += self.check_if_found(this_find)
             self.num_findclause += 1
         self.updateTranslationString(string_to_add)
