@@ -43,7 +43,7 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
         self.translation_string += string_value
 
     def enterDocument(self, ctx:specLang_draftP4Parser.DocumentContext):
-        self.updateTranslationString("from pedal.environments.quick import *\n\n")
+        self.updateTranslationString("from pedal.cait.cait_api import *\nfrom pedal.core.commands import *\n\n")
 
     def exitBeginpart(self, ctx:specLang_draftP4Parser.BeginpartContext):
         string_to_add = "\ndef "
@@ -76,16 +76,23 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
         string_to_add = "\tTITLE = '" + ctx.CODE_TEXT().getText() + "'\n"
         self.updateTranslationString(string_to_add)
 
+    def check_if_found(self, match_list):
+        string_to_add = 'if ' + match_list + ':\n\t\tprev_found_matchset = ' + match_list + '\n'
+        return string_to_add
+
     def exitFindclause(self, ctx:specLang_draftP4Parser.FindclauseContext):
         this_find = "find" + str(self.num_findclause)
         string_to_add = "\t" + this_find + " = "
         if self.num_findclause == 0:
-            string_to_add += 'find_matches("""' + ctx.CODE_TEXT().getText() + '""")\n\tprev_matchset = ' + this_find + "\n"
+            string_to_add += 'find_matches("""' + ctx.CODE_TEXT().getText() + '""")\n\tprev_matchset = ' + this_find + "\n\t"
+            string_to_add += 'prev_found_matchset = []\n\t'
+            string_to_add += self.check_if_found(this_find)
             self.num_findclause += 1
         else:
             string_to_add += "[]\n\tfor match in prev_matchset:\n\t\t" + this_find + '.extend(find_matches("""'
             string_to_add += ctx.CODE_TEXT().getText() + '""", use_previous = match))'
-            string_to_add += "\n\tprev_matchset = " + this_find + "\n"
+            string_to_add += "\n\tprev_matchset = " + this_find + "\n\t"
+            string_to_add += self.check_if_found(this_find)
             self.num_findclause += 1
         self.updateTranslationString(string_to_add)
 
@@ -123,7 +130,8 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
             #expr_found = expr_found.strip()
             string_to_add += expr_found + " = match['" + expr_found + "']\n\t\t"
         string_to_add += "if " + this_where_pattern + ":\n\t\t\t" + this_where + ".append(match)\n\t"
-        string_to_add += "prev_matchset = " + this_where + "\n"
+        string_to_add += "prev_matchset = " + this_where + "\n\t"
+        string_to_add += self.check_if_found(this_where)
         self.num_whereclause += 1
         self.updateTranslationString(string_to_add)
 
@@ -134,7 +142,8 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
         string_to_add += this_expr + " = match['" + this_expr + "']\n\t\t"
         string_to_add += this_within + ".extend(" + this_expr + '.find_matches("""' + ctx.CODE_TEXT().getText()
         string_to_add += '""", use_previous = match))'
-        string_to_add += "\n\tprev_matchset = " + this_within + "\n"
+        string_to_add += "\n\tprev_matchset = " + this_within + "\n\t"
+        string_to_add += self.check_if_found(this_within)
         self.num_withinclause += 1
         self.updateTranslationString(string_to_add)
 
@@ -148,7 +157,10 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
         else:
             # feedback within parens processing start
             feedbackparenstext = "("
+            feedbackparenstext2 = "("
+            parens_tokens_present = False
             if ctx.feedbackpart().feedbackparenspart():
+                parens_tokens_present = True
                 PARENS_TEXT_TOKENS = ctx.feedbackpart().feedbackparenspart().PARENS_TEXT()
                 index = 1
                 for PARENS_TEXT_TOKEN in PARENS_TEXT_TOKENS:
@@ -168,12 +180,20 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
                 feedbackparenstext += ")"
             else:
                 feedbackparenstext += "message=MESSAGE, label=LABEL, title=TITLE)"
+                feedbackparenstext2 += "message=MESSAGE.format(**prev_found_matchset[0].names()), label=LABEL, title=TITLE)"
             # feedback within parens processing end
 
+            return_type = "explain"
             if ctx.feedbackpart().GENTLE():
-                string_to_add += "return gently" + feedbackparenstext + "\n"
+                return_type = "gently"
+#                string_to_add += "return gently" + feedbackparenstext + "\n"
+#            else:
+#                string_to_add += "return explain" + feedbackparenstext + "\n"
+            if parens_tokens_present:
+                string_to_add += "return " + return_type + feedbackparenstext + "\n"
             else:
-                string_to_add += "return explain" + feedbackparenstext + "\n"
+                string_to_add += "if prev_found_matchset:\n\t\t\treturn " + return_type + feedbackparenstext2 + "\n\t\t"
+                string_to_add += "else:\n\t\t\treturn " + return_type + feedbackparenstext + "\n"
 
         # handle elsepart if it exists
         if ctx.elsepart():
@@ -183,7 +203,10 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
             else:
                 # feedback within parens processing start
                 feedbackparenstext = "("
+                feedbackparenstext2 = "("
+                parens_tokens_present = False
                 if ctx.elsepart().feedbackpart().feedbackparenspart():
+                    parens_tokens_present = True
                     PARENS_TEXT_TOKENS = ctx.elsepart().feedbackpart().feedbackparenspart().PARENS_TEXT()
                     index = 1
                     for PARENS_TEXT_TOKEN in PARENS_TEXT_TOKENS:
@@ -203,12 +226,25 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
                     feedbackparenstext += ")"
                 else:
                     feedbackparenstext += "message=MESSAGE, label=LABEL, title=TITLE)"
+                    feedbackparenstext2 += "message=MESSAGE.format(**prev_found_matchset[0].names()), label=LABEL, title=TITLE)"
                     # feedback within parens processing end
 
-                if ctx.elsepart().feedbackpart().GENTLE():
-                    string_to_add += "return gently" + feedbackparenstext + "\n"
+#                if ctx.elsepart().feedbackpart().GENTLE():
+#                    string_to_add += "return gently" + feedbackparenstext + "\n"
+#                else:
+#                    string_to_add += "return explain" + feedbackparenstext + "\n"
+
+                return_type = "explain"
+                if ctx.feedbackpart().GENTLE():
+                    return_type = "gently"
+#                   string_to_add += "return gently" + feedbackparenstext + "\n"
+#               else:
+#                   string_to_add += "return explain" + feedbackparenstext + "\n"
+                if parens_tokens_present:
+                    string_to_add += "return " + return_type + feedbackparenstext + "\n"
                 else:
-                    string_to_add += "return explain" + feedbackparenstext + "\n"
+                    string_to_add += "if prev_found_matchset:\n\t\t\treturn " + return_type + feedbackparenstext2 + "\n\t\t"
+                    string_to_add += "else:\n\t\t\treturn " + return_type + feedbackparenstext + "\n"
         self.updateTranslationString(string_to_add)
 
     def exitEndpart(self, ctx:specLang_draftP4Parser.EndpartContext):
@@ -216,7 +252,10 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
         if ctx.WITH():
             # feedback within parens processing start
             feedbackparenstext = "("
+            feedbackparenstext2 = "("
+            parens_tokens_present = False
             if ctx.feedbackparenspart():
+                parens_tokens_present = True
                 PARENS_TEXT_TOKENS = ctx.feedbackparenspart().PARENS_TEXT()
                 index = 1
                 for PARENS_TEXT_TOKEN in PARENS_TEXT_TOKENS:
@@ -236,18 +275,32 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
                 feedbackparenstext += ")"
             else:
                 feedbackparenstext += "message=MESSAGE, label=LABEL, title=TITLE)"
+                feedbackparenstext2 += "message=MESSAGE.format(**prev_found_matchset[0].names()), label=LABEL, title=TITLE)"
             # feedback within parens processing end
 
+#            if ctx.GENTLE():
+#                string_to_add += "return gently" + feedbackparenstext + "\n\n"
+#            else:
+#                string_to_add += "return explain" + feedbackparenstext + "\n\n"
+
+            return_type = "explain"
             if ctx.GENTLE():
-                string_to_add += "return gently" + feedbackparenstext + "\n\n"
+                return_type = "gently"
+            #                   string_to_add += "return gently" + feedbackparenstext + "\n"
+            #               else:
+            #                   string_to_add += "return explain" + feedbackparenstext + "\n"
+            if parens_tokens_present:
+                string_to_add += "return " + return_type + feedbackparenstext + "\n\n"
             else:
-                string_to_add += "return explain" + feedbackparenstext + "\n\n"
+                string_to_add += "if prev_found_matchset:\n\t\treturn " + return_type + feedbackparenstext2 + "\n\t"
+                string_to_add += "else:\n\t\treturn " + return_type + feedbackparenstext + "\n\n"
         else:
             string_to_add += "return False\n\n"
         self.updateTranslationString(string_to_add)
 
     def make_unit_test_string(self, name_of_file):
-        unit_test_string = "import unittest\nimport ast\nimport sys\nimport os\n\n\n\n\n"
+        unit_test_string = "import unittest\nimport ast\nimport sys\nimport os\n\n\n\n"
+        # may need to add this back in: \nos.environ['PEDAL_AS_LIBRARY'] = \"1\"
         unit_test_string = unit_test_string + "sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))\n\n"
         unit_test_string = unit_test_string + "from pedal import contextualize_report\n"
         unit_test_string += "from pedal.cait.cait_api import *\nfrom pedal.core.report import MAIN_REPORT\n"
@@ -269,7 +322,7 @@ class SpecLangToPedalCodeTranslator(specLang_draftP4ParserListener):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1: # len(sys.argv) > 2 means output_file then input_file
+    if len(sys.argv) > 1:  # len(sys.argv) > 2 means output_file then input_file
         input_stream = FileStream(sys.argv[1])
     else:
         input_stream = InputStream(sys.stdin.read())
@@ -299,10 +352,3 @@ if __name__ == '__main__':
             unit_text_string = listener.make_unit_test_string(name_of_file=sys.argv[2])
             n_two = unit_text_file.write(unit_text_string)
             unit_text_file.close()
-
-
-
-
-
-
-
